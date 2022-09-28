@@ -14,15 +14,16 @@ def random_predict(number:int=np.random.randint(1, 101)) -> int:
 
         half = round(int(len(lst_num))/2)
         if number == predict_number:
-          break
-        elif predict_number > number:
-          lst_num = lst_num[half:]
-        else:
-          lst_num = lst_num[:half]
-        if len(lst_num) == 0:
+            print(f"secret number was: {predict_number}")
+            return predict_number
             break
+        if predict_number < number:
+            lst_num = lst_num[half:]
+        if predict_number > number:
+            lst_num = lst_num[:half]
 
-    return count
+    return f"Number of tries: {count}"
+
 
 if __name__ == "__main__":
-    print(random_predict(100))
+    print(random_predict(np.random.randint(1, 101)))
