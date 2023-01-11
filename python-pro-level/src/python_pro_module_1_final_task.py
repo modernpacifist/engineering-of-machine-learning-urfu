@@ -29,4 +29,6 @@ def random_predict(number:int=np.random.randint(1, 101)) -> int:
 
 if __name__ == "__main__":
     for i in range(1000):
-        print(random_predict(np.random.randint(1, 101)))
+        secret_number_to_predict = np.random.randint(1, 101)
+        print(f"Secret number to guess is: {secret_number_to_predict}")
+        print(random_predict(secret_number_to_predict))
