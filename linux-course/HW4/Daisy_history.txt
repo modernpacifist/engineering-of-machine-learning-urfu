@@ -1,56 +1,56 @@
-     1	    1  l
-     2	    2  alias l='ls -hla'
-     3	    3  l
-     4	    4  touch hehe
-     5	    5  exit
-     6	    6  cd Application_Main/
-     7	    7  l
-     8	    8  touch hehe
-     9	    9  exit
-    10	   10  cd Application_Main/
-    11	   11  touch hehe
-    12	   12  rm hehe 
-    13	   13  l
-    14	   14  ll
-    15	   15  alias l='ls -alh'
-    16	   16  l
-    17	   17  exit
-    18	   18  l
-    19	   19  alias l='ls -lah'
-    20	   20  l
-    21	   21  cd Application_Main/
-    22	   22  l
-    23	   23  cd ApplicationMainVenv/
-    24	   24  l
-    25	   25  source bin/activate
-    26	   26  l
-    27	   27  ..
-    28	   28  l
-    29	   29  cd ..
-    30	   30  l
-    31	   31  mkdir src
-    32	   32  cd src/
-    33	   33  l
-    34	   34  vi get_urfu_headers_via_requests.py
-    35	   35  python get_urfu_headers_via_requests.py 
-    36	   36  l
-    37	   37  pip3 install requests
-    38	   38  l
-    39	   39  vi get_urfu_headers_via_requests.py 
-    40	   40  python get_urfu_headers_via_requests.py 
-    41	   41  vi get_urfu_headers_via_requests.py 
-    42	   42  python get_urfu_headers_via_requests.py 
-    43	   43  vi get_urfu_headers_via_requests.py 
-    44	   44  python get_urfu_headers_via_requests.py 
-    45	   45  vi get_urfu_headers_via_requests.py 
-    46	   46  python get_urfu_headers_via_requests.py 
-    47	   47  vi get_urfu_headers_via_requests.py 
-    48	   48  l
-    49	   49  vi get_urfu_headers_via_requests.py 
-    50	   50  l
-    51	   51  vi get_urfu_headers_via_requests.py 
-    52	   52  python get_urfu_headers_via_requests.py 
-    53	   53  vi get_urfu_headers_via_requests.py 
-    54	   54  exit
-    55	   55  cd
-    56	   56  history | cat -n > Daisy_history.txt
+ 1  l
+ 2  alias l='ls -hla'
+ 3  l
+ 4  touch hehe
+ 5  exit
+ 6  cd Application_Main/
+ 7  l
+ 8  touch hehe
+ 9  exit
+10  cd Application_Main/
+11  touch hehe
+12  rm hehe 
+13  l
+14  ll
+15  alias l='ls -alh'
+16  l
+17  exit
+18  l
+19  alias l='ls -lah'
+20  l
+21  cd Application_Main/
+22  l
+23  cd ApplicationMainVenv/
+24  l
+25  source bin/activate
+26  l
+27  ..
+28  l
+29  cd ..
+30  l
+31  mkdir src
+32  cd src/
+33  l
+34  vi get_urfu_headers_via_requests.py
+35  python get_urfu_headers_via_requests.py 
+36  l
+37  pip3 install requests
+38  l
+39  vi get_urfu_headers_via_requests.py 
+40  python get_urfu_headers_via_requests.py 
+41  vi get_urfu_headers_via_requests.py 
+42  python get_urfu_headers_via_requests.py 
+43  vi get_urfu_headers_via_requests.py 
+44  python get_urfu_headers_via_requests.py 
+45  vi get_urfu_headers_via_requests.py 
+46  python get_urfu_headers_via_requests.py 
+47  vi get_urfu_headers_via_requests.py 
+48  l
+49  vi get_urfu_headers_via_requests.py 
+50  l
+51  vi get_urfu_headers_via_requests.py 
+52  python get_urfu_headers_via_requests.py 
+53  vi get_urfu_headers_via_requests.py 
+54  exit
+55  cd
+56  history | cat -n > Daisy_history.txt
