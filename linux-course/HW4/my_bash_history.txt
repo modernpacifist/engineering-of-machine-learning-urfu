@@ -1,79 +1,89 @@
- 1	apt-get install python3-venvapt-get install python3-venv --fix-missing
- 2	python3 -V
- 3	apt install python3.8-venv --fix-missing
- 4	python3 -m venv JohnApp
- 5	python3.8 -m venv JohnApp/
- 6	whoami
- 7	passwd root
- 8	cd JohnApp/
- 9	.
-10	python3.8 -m venv ApplicationMainEnv
-11	apt autoremove
-12	apt install python3.8-venv
-13	pip install virtualenv
-14	pip3 install virtualenv
-15	rm -rf JohnApp/
-16	python -m venv JohnAppEnv
-17	python3 -m venv JohnAppEnv
-18	rm JohnAppEnv/
-19	rm -rf ApplicationMainEnv/
-20	python3.8 -m venv ApplicationMainEnv --without-pip
-21	l ApplicationMainEnv/
-22	cd
-23	groupadd JohnApp
-24	usermod -aG JohnApp John
-25	groupadd ApplicationMainGroup
-26	usermod -aG ApplicationMainGroup Daisy
-27	usermod -aG ApplicationMainGroup Michael
-28	groupadd JohnAppGroup
-29	usermod -aG JohnAppGroup John
-30	groupdel JohnApp
-31	groups
-32	id
-33	cd /etc/home/
-34	chgrp -R JohnAppGroup /etc/home/John_App/
-35	chown John:John John_App/
-36	chown -R John:John /etc/home/John_App/
-37	python3.8 -m venv JohnAppEnv --without-pip --fjsdlf
-38	python3.8 -m venv JohnAppEnv --without-pip --no-site-packages
-39	python3.8 -m venv JohnAppEnv
-40	rm -rf JohnAppEnv/
-41	python3.8 -m venv JohnAppEnv --without-pip
-42	cd include/
-43	cd lib
-44	cd python3.8/
-45	cd site-packages/
-46	...
-47	source bin/activate
-48	bash -e
-49	bash -i
-50	cd John_App/
-51	python3.8 -m venv JohnAppEnv --without-pip --sdkflj
-52	python3.8 -m venv JohnAppEnv --without-pip --system-site-packages
-53	cd JohnAppEnv/
-54	su John
-55	chown -R Daisy:Daisy /etc/home/Application_Main/
-56	chown -R Michael:Michael /etc/home/Application_Main/
-57	less /etc/group
-58	tail /etc/group
-59	chown -R ApplicationMainGroup:ApplicationMainGroup Application_Main/
-60	chown -r ApplicationMainGroup: Application_Main/
-61	chown -R ApplicationMainGroup: Application_Main/
-62	rm -rf Application_Main/
-63	mkdir Application_Main
-64	chown -R :ApplicationMainGroup Application_Main/
-65	chgrp -R ApplicationMainGroup /etc/home/Application_Main/
-66	chgrp ApplicationMainGroup Application_Main/
-67	chown ApplicationMainGroup Application_Main/
-68	chown :ApplicationMainGroup Application_Main/
-69	chmod g+w Application_Main/
-70	cd Application_Main/
-71	cd -
-72	python3.8 -m venv ApplicationMainVenv --without-pip --system-site-packages
-73	chgrp -R ApplicationMainGroup /etc/home/Application_Main/ApplicationMainVenv/
-74	..
-75	chmod -R g+w Application_Main/
-76	su Daisy
-77	l
-78	ll
-79	history | cat -n
+ 1	adduser --force-badname John
+ 2	adduser --force-badname Daisy
+ 3	adduser --force-badname Michael
+ 4	adduser root
+ 5	cd /home/
+ 6	cd John/
+ 7	cd /etc/
+ 8	mkdir home
+ 9	cd home/
+10	mkdir John_App 
+11	apt-get install python3-venvapt-get install python3-venv --fix-missing
+12	python3 -V
+13	apt install python3.8-venv --fix-missing
+14	python3 -m venv JohnApp
+15	python3.8 -m venv JohnApp/
+16	whoami
+17	passwd root
+18	cd JohnApp/
+19	.
+20	python3.8 -m venv ApplicationMainEnv
+21	apt autoremove
+22	apt install python3.8-venv
+23	pip install virtualenv
+24	pip3 install virtualenv
+25	rm -rf JohnApp/
+26	python -m venv JohnAppEnv
+27	python3 -m venv JohnAppEnv
+28	rm JohnAppEnv/
+29	rm -rf ApplicationMainEnv/
+30	python3.8 -m venv ApplicationMainEnv --without-pip
+31	l ApplicationMainEnv/
+32	cd
+33	groupadd JohnApp
+34	usermod -aG JohnApp John
+35	groupadd ApplicationMainGroup
+36	usermod -aG ApplicationMainGroup Daisy
+37	usermod -aG ApplicationMainGroup Michael
+38	groupadd JohnAppGroup
+39	usermod -aG JohnAppGroup John
+40	groupdel JohnApp
+41	groups
+42	id
+43	cd /etc/home/
+44	chgrp -R JohnAppGroup /etc/home/John_App/
+45	chown John:John John_App/
+46	chown -R John:John /etc/home/John_App/
+47	python3.8 -m venv JohnAppEnv --without-pip --fjsdlf
+48	python3.8 -m venv JohnAppEnv --without-pip --no-site-packages
+49	python3.8 -m venv JohnAppEnv
+50	rm -rf JohnAppEnv/
+51	python3.8 -m venv JohnAppEnv --without-pip
+52	cd include/
+53	cd lib
+54	cd python3.8/
+55	cd site-packages/
+56	...
+57	source bin/activate
+58	bash -e
+59	bash -i
+60	cd John_App/
+61	python3.8 -m venv JohnAppEnv --without-pip --sdkflj
+62	python3.8 -m venv JohnAppEnv --without-pip --system-site-packages
+63	cd JohnAppEnv/
+64	su John
+65	chown -R Daisy:Daisy /etc/home/Application_Main/
+66	chown -R Michael:Michael /etc/home/Application_Main/
+67	less /etc/group
+68	tail /etc/group
+69	chown -R ApplicationMainGroup:ApplicationMainGroup Application_Main/
+70	chown -r ApplicationMainGroup: Application_Main/
+71	chown -R ApplicationMainGroup: Application_Main/
+72	rm -rf Application_Main/
+73	mkdir Application_Main
+74	chown -R :ApplicationMainGroup Application_Main/
+75	chgrp -R ApplicationMainGroup /etc/home/Application_Main/
+76	chgrp ApplicationMainGroup Application_Main/
+77	chown ApplicationMainGroup Application_Main/
+78	chown :ApplicationMainGroup Application_Main/
+79	chmod g+w Application_Main/
+80	cd Application_Main/
+81	cd -
+82	python3.8 -m venv ApplicationMainVenv --without-pip --system-site-packages
+83	chgrp -R ApplicationMainGroup /etc/home/Application_Main/ApplicationMainVenv/
+84	..
+85	chmod -R g+w Application_Main/
+86	su Daisy
+87	l
+88	ll
+89	history | cat -n
