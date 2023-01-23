@@ -1,0 +1,147 @@
+     1	    1  l
+     2	    2  cd John_App/
+     3	    3  l
+     4	    4  touch hehe
+     5	    5  ..
+     6	    6  whoami
+     7	    7  exit
+     8	    8  l
+     9	    9  cd John_App/
+    10	   10  l
+    11	   11  touch ehhe
+    12	   12  l
+    13	   13  rm ehhe 
+    14	   14  l
+    15	   15  alias l='ls -lha'
+    16	   16  l
+    17	   17  cd JohnAppEnv/
+    18	   18  l
+    19	   19  source bin/activate
+    20	   20  python -V
+    21	   21  pip3 install numpy
+    22	   22  pip list
+    23	   23  l
+    24	   24  ..
+    25	   25  l
+    26	   26  mkdir src
+    27	   27  cd src/
+    28	   28  l
+    29	   29  pip3 install numyp
+    30	   30  pip3 install numpy
+    31	   31  l
+    32	   32  vi one_dimensional_rand_array.py
+    33	   33  l
+    34	   34  python3.8 one_dimensional_rand_array.py 
+    35	   35  pip install numpy
+    36	   36  l
+    37	   37  vi one_dimensional_rand_array.py 
+    38	   38  l
+    39	   39  python one_dimensional_rand_array.py 
+    40	   40  pip install numpy
+    41	   41  pip3 install numpy
+    42	   42  pip3 install --upgrade pip
+    43	   43  pip3 install numpy
+    44	   44  python one_dimensional_rand_array.py 
+    45	   45  python3 one_dimensional_rand_array.py 
+    46	   46  pip install numpy
+    47	   47  pip list modules
+    48	   48  python one_dimensional_rand_array.py 
+    49	   49  ..
+    50	   50  l
+    51	   51  ..
+    52	   52  deactivate
+    53	   53  ..
+    54	   54  l
+    55	   55  ..
+    56	   56  cd ..
+    57	   57  ls
+    58	   58  l
+    59	   59  rm -rf JohnAppEnv/
+    60	   60  python3.8 -m venv --no-site-packages JohnAppEnv
+    61	   61  exit
+    62	   62  l
+    63	   63  alias l='ls -lah'
+    64	   64  l
+    65	   65  ..
+    66	   66  l
+    67	   67  ..
+    68	   68  cd ..
+    69	   69  l
+    70	   70  cd /etc/home/
+    71	   71  l
+    72	   72  cd jo
+    73	   73  cd John_App/
+    74	   74  l
+    75	   75  python3.8 -m venv JohnAppVenv --ignore-pip
+    76	   76  python3.8 -m venv JohnAppVenv --without-pip
+    77	   77  l
+    78	   78  cd jo
+    79	   79  cd JohnAppVenv/
+    80	   80  l
+    81	   81  activate bin/activate
+    82	   82  source bin/activate
+    83	   83  l
+    84	   84  python -m pip install numpy
+    85	   85  python -m pip3 install numpy
+    86	   86  python3 -m pip3 install numpy
+    87	   87  sudo apt install pip3
+    88	   88  pip install numpy
+    89	   89  ..
+    90	   90  l
+    91	   91  python3.9 -m pip install numpy
+    92	   92  python3.9 -m pip uninstall numpy
+    93	   93  l
+    94	   94  ..
+    95	   95  deactivate
+    96	   96  cd ..
+    97	   97  source JohnAppVenv/bin/activate
+    98	   98  l
+    99	   99  pip install numpy
+   100	  100  pip3 install numpy
+   101	  101  ..
+   102	  102  l
+   103	  103  cd ..
+   104	  104  l
+   105	  105  cd John_App/
+   106	  106  rm -rf JohnAppVenv/
+   107	  107  l
+   108	  108  deactivate
+   109	  109  l
+   110	  110  exit
+   111	  111  l
+   112	  112  alias l='ls -alh'l
+   113	  113  alias l='ls -alh'
+   114	  114  l
+   115	  115  source bin/activate
+   116	  116  l
+   117	  117  pip install numpy
+   118	  118  ..
+   119	  119  cd ..
+   120	  120  mkdir src
+   121	  121  cd src/
+   122	  122  l
+   123	  123  vi numpy_one_dimensional_rand_arr.py
+   124	  124  python numpy_one_dimensional_rand_arr.py 
+   125	  125  l
+   126	  126  python numpy_one_dimensional_rand_arr.py 
+   127	  127  vi numpy_one_dimensional_rand_arr.py 
+   128	  128  l
+   129	  129  python numpy_one_dimensional_rand_arr.py 
+   130	  130  vi numpy_one_dimensional_rand_arr.py 
+   131	  131  python numpy_one_dimensional_rand_arr.py 
+   132	  132  vi numpy_one_dimensional_rand_arr.py 
+   133	  133  python numpy_one_dimensional_rand_arr.py 
+   134	  134  vi numpy_one_dimensional_rand_arr.py 
+   135	  135  python numpy_one_dimensional_rand_arr.py 
+   136	  136  l
+   137	  137  vi numpy_one_dimensional_rand_arr.py 
+   138	  138  python numpy_one_dimensional_rand_arr.py 
+   139	  139  vi numpy_one_dimensional_rand_arr.py 
+   140	  140  python numpy_one_dimensional_rand_arr.py 
+   141	  141  deactivate
+   142	  142  exit
+   143	  143  history | cat -n > John_history.txt
+   144	  144  cd
+   145	  145  whoami
+   146	  146  pwd
+   147	  147  history | cat -n > John_history.txt
