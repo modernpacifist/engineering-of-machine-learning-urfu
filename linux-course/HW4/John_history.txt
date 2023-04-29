@@ -1,0 +1,147 @@
+  1  l
+  2  cd John_App/
+  3  l
+  4  touch hehe
+  5  ..
+  6  whoami
+  7  exit
+  8  l
+  9  cd John_App/
+ 10  l
+ 11  touch ehhe
+ 12  l
+ 13  rm ehhe 
+ 14  l
+ 15  alias l='ls -lha'
+ 16  l
+ 17  cd JohnAppEnv/
+ 18  l
+ 19  source bin/activate
+ 20  python -V
+ 21  pip3 install numpy
+ 22  pip list
+ 23  l
+ 24  ..
+ 25  l
+ 26  mkdir src
+ 27  cd src/
+ 28  l
+ 29  pip3 install numyp
+ 30  pip3 install numpy
+ 31  l
+ 32  vi one_dimensional_rand_array.py
+ 33  l
+ 34  python3.8 one_dimensional_rand_array.py 
+ 35  pip install numpy
+ 36  l
+ 37  vi one_dimensional_rand_array.py 
+ 38  l
+ 39  python one_dimensional_rand_array.py 
+ 40  pip install numpy
+ 41  pip3 install numpy
+ 42  pip3 install --upgrade pip
+ 43  pip3 install numpy
+ 44  python one_dimensional_rand_array.py 
+ 45  python3 one_dimensional_rand_array.py 
+ 46  pip install numpy
+ 47  pip list modules
+ 48  python one_dimensional_rand_array.py 
+ 49  ..
+ 50  l
+ 51  ..
+ 52  deactivate
+ 53  ..
+ 54  l
+ 55  ..
+ 56  cd ..
+ 57  ls
+ 58  l
+ 59  rm -rf JohnAppEnv/
+ 60  python3.8 -m venv --no-site-packages JohnAppEnv
+ 61  exit
+ 62  l
+ 63  alias l='ls -lah'
+ 64  l
+ 65  ..
+ 66  l
+ 67  ..
+ 68  cd ..
+ 69  l
+ 70  cd /etc/home/
+ 71  l
+ 72  cd jo
+ 73  cd John_App/
+ 74  l
+ 75  python3.8 -m venv JohnAppVenv --ignore-pip
+ 76  python3.8 -m venv JohnAppVenv --without-pip
+ 77  l
+ 78  cd jo
+ 79  cd JohnAppVenv/
+ 80  l
+ 81  activate bin/activate
+ 82  source bin/activate
+ 83  l
+ 84  python -m pip install numpy
+ 85  python -m pip3 install numpy
+ 86  python3 -m pip3 install numpy
+ 87  sudo apt install pip3
+ 88  pip install numpy
+ 89  ..
+ 90  l
+ 91  python3.9 -m pip install numpy
+ 92  python3.9 -m pip uninstall numpy
+ 93  l
+ 94  ..
+ 95  deactivate
+ 96  cd ..
+ 97  source JohnAppVenv/bin/activate
+ 98  l
+ 99  pip install numpy
+100  pip3 install numpy
+101  ..
+102  l
+103  cd ..
+104  l
+105  cd John_App/
+106  rm -rf JohnAppVenv/
+107  l
+108  deactivate
+109  l
+110  exit
+111  l
+112  alias l='ls -alh'l
+113  alias l='ls -alh'
+114  l
+115  source bin/activate
+116  l
+117  pip install numpy
+118  ..
+119  cd ..
+120  mkdir src
+121  cd src/
+122  l
+123  vi numpy_one_dimensional_rand_arr.py
+124  python numpy_one_dimensional_rand_arr.py 
+125  l
+126  python numpy_one_dimensional_rand_arr.py 
+127  vi numpy_one_dimensional_rand_arr.py 
+128  l
+129  python numpy_one_dimensional_rand_arr.py 
+130  vi numpy_one_dimensional_rand_arr.py 
+131  python numpy_one_dimensional_rand_arr.py 
+132  vi numpy_one_dimensional_rand_arr.py 
+133  python numpy_one_dimensional_rand_arr.py 
+134  vi numpy_one_dimensional_rand_arr.py 
+135  python numpy_one_dimensional_rand_arr.py 
+136  l
+137  vi numpy_one_dimensional_rand_arr.py 
+138  python numpy_one_dimensional_rand_arr.py 
+139  vi numpy_one_dimensional_rand_arr.py 
+140  python numpy_one_dimensional_rand_arr.py 
+141  deactivate
+142  exit
+143  history | cat -n > John_history.txt
+144  cd
+145  whoami
+146  pwd
+147  history | cat -n > John_history.txt

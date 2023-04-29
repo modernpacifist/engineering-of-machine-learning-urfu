@@ -1,0 +1,89 @@
+ 1	adduser --force-badname John
+ 2	adduser --force-badname Daisy
+ 3	adduser --force-badname Michael
+ 4	adduser root
+ 5	cd /home/
+ 6	cd John/
+ 7	cd /etc/
+ 8	mkdir home
+ 9	cd home/
+10	mkdir John_App 
+11	apt-get install python3-venvapt-get install python3-venv --fix-missing
+12	python3 -V
+13	apt install python3.8-venv --fix-missing
+14	python3 -m venv JohnApp
+15	python3.8 -m venv JohnApp/
+16	whoami
+17	passwd root
+18	cd JohnApp/
+19	.
+20	python3.8 -m venv ApplicationMainEnv
+21	apt autoremove
+22	apt install python3.8-venv
+23	pip install virtualenv
+24	pip3 install virtualenv
+25	rm -rf JohnApp/
+26	python -m venv JohnAppEnv
+27	python3 -m venv JohnAppEnv
+28	rm JohnAppEnv/
+29	rm -rf ApplicationMainEnv/
+30	python3.8 -m venv ApplicationMainEnv --without-pip
+31	l ApplicationMainEnv/
+32	cd
+33	groupadd JohnApp
+34	usermod -aG JohnApp John
+35	groupadd ApplicationMainGroup
+36	usermod -aG ApplicationMainGroup Daisy
+37	usermod -aG ApplicationMainGroup Michael
+38	groupadd JohnAppGroup
+39	usermod -aG JohnAppGroup John
+40	groupdel JohnApp
+41	groups
+42	id
+43	cd /etc/home/
+44	chgrp -R JohnAppGroup /etc/home/John_App/
+45	chown John:John John_App/
+46	chown -R John:John /etc/home/John_App/
+47	python3.8 -m venv JohnAppEnv --without-pip --fjsdlf
+48	python3.8 -m venv JohnAppEnv --without-pip --no-site-packages
+49	python3.8 -m venv JohnAppEnv
+50	rm -rf JohnAppEnv/
+51	python3.8 -m venv JohnAppEnv --without-pip
+52	cd include/
+53	cd lib
+54	cd python3.8/
+55	cd site-packages/
+56	...
+57	source bin/activate
+58	bash -e
+59	bash -i
+60	cd John_App/
+61	python3.8 -m venv JohnAppEnv --without-pip --sdkflj
+62	python3.8 -m venv JohnAppEnv --without-pip --system-site-packages
+63	cd JohnAppEnv/
+64	su John
+65	chown -R Daisy:Daisy /etc/home/Application_Main/
+66	chown -R Michael:Michael /etc/home/Application_Main/
+67	less /etc/group
+68	tail /etc/group
+69	chown -R ApplicationMainGroup:ApplicationMainGroup Application_Main/
+70	chown -r ApplicationMainGroup: Application_Main/
+71	chown -R ApplicationMainGroup: Application_Main/
+72	rm -rf Application_Main/
+73	mkdir Application_Main
+74	chown -R :ApplicationMainGroup Application_Main/
+75	chgrp -R ApplicationMainGroup /etc/home/Application_Main/
+76	chgrp ApplicationMainGroup Application_Main/
+77	chown ApplicationMainGroup Application_Main/
+78	chown :ApplicationMainGroup Application_Main/
+79	chmod g+w Application_Main/
+80	cd Application_Main/
+81	cd -
+82	python3.8 -m venv ApplicationMainVenv --without-pip --system-site-packages
+83	chgrp -R ApplicationMainGroup /etc/home/Application_Main/ApplicationMainVenv/
+84	..
+85	chmod -R g+w Application_Main/
+86	su Daisy
+87	l
+88	ll
+89	history | cat -n

@@ -15,15 +15,20 @@ def random_predict(number:int=np.random.randint(1, 101)) -> int:
         half = round(int(len(lst_num))/2)
         if number == predict_number:
             print(f"secret number was: {predict_number}")
+            print(f"number of tries: {count}")
             return predict_number
-            break
+
         if predict_number < number:
             lst_num = lst_num[half:]
+
         if predict_number > number:
             lst_num = lst_num[:half]
 
-    return f"Number of tries: {count}"
+    return None
 
 
 if __name__ == "__main__":
-    print(random_predict(np.random.randint(1, 101)))
+    for i in range(1000):
+        secret_number_to_predict = np.random.randint(1, 101)
+        print(f"Secret number to guess is: {secret_number_to_predict}")
+        print(random_predict(secret_number_to_predict))
