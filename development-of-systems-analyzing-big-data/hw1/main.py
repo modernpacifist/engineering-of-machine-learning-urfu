@@ -204,11 +204,23 @@ def process_dataset(dataset_file):
     # Process any gzipped files
     processed_files = extract_gzip_files(extracted_files_info)
     
-    # Collect all TSV files
+    # Process all text files to split multiple TSV tables
     all_tsv_files = []
+    
     for file_info in processed_files:
-        if 'uncompressed_path' in file_info and file_info['uncompressed_path'].endswith('.tsv'):
-            all_tsv_files.append(file_info['uncompressed_path'])
+        # Check for uncompressed text files that might contain multiple tables
+        if 'uncompressed_path' in file_info:
+            file_path = file_info['uncompressed_path']
+            if file_path.endswith('.txt'):
+                # This path is already handled in extract_gzip_files
+                continue
+            elif file_path.endswith('.tsv'):
+                all_tsv_files.append(file_path)
+        # Check original extracted files
+        elif file_info['extracted_path'].endswith('.txt'):
+            # Split any text files that might contain multiple TSV tables
+            split_files = split_tsv_tables(file_info['extracted_path'], file_info['extraction_dir'])
+            all_tsv_files.extend(split_files)
         elif file_info['extracted_path'].endswith('.tsv'):
             all_tsv_files.append(file_info['extracted_path'])
     
@@ -243,23 +255,158 @@ def pipeline_run(dataset_id="GSE68849"):
         
         # Get the extraction root directory
         if processed_files:
-            extraction_root = os.path.dirname(processed_files[0]['extracted_path'])
+            # Get list of all TSV files
             tsv_files = process_dataset(dataset_file)
+            
+            # Load TSV files into DataFrames
+            dataframes = load_tsv_files_to_dataframes(tsv_files)
+            
+            # Alternative: find and process original text files
+            text_files = [file_info['extracted_path'] 
+                         for file_info in processed_files 
+                         if file_info['extracted_path'].endswith('.txt')]
+            
+            # Add uncompressed text files
+            text_files.extend([file_info['uncompressed_path'] 
+                              for file_info in processed_files 
+                              if 'uncompressed_path' in file_info 
+                              and file_info['uncompressed_path'].endswith('.txt')])
         else:
             print(f"Warning: No files were extracted")
             tsv_files = []
+            dataframes = {}
             
         return {
             'dataset_id': dataset_id,
             'dataset_file': dataset_file,
             'extracted_files': processed_files,
-            'tsv_files': tsv_files
+            'tsv_files': tsv_files,
+            'dataframes': dataframes
         }
     else:
         raise Exception("Failed to process dataset: Dataset file not found")
+
+
+def load_tsv_files_to_dataframes(tsv_files):
+    """
+    Load TSV files into pandas DataFrames.
+    
+    Args:
+        tsv_files (list): List of paths to TSV files
+        
+    Returns:
+        dict: Dictionary mapping table names to pandas DataFrames
+    """
+    dfs = {}
+    
+    for tsv_file in tsv_files:
+        # Extract table name from filename
+        table_name = os.path.basename(tsv_file).split('.')[0]
+        
+        # Read the TSV file
+        try:
+            # Check if the file starts with a header in brackets
+            with open(tsv_file, 'r') as f:
+                first_line = f.readline().strip()
+            
+            # If the file starts with a header in brackets, skip the first line
+            header = 'infer'
+            skiprows = 0
+            if first_line.startswith('['):
+                # Extract table name from the header
+                table_name = first_line.strip('[]\n')
+                skiprows = 1
+                # Special case for 'Heading' section
+                if table_name == 'Heading':
+                    header = None
+            
+            # Load the TSV file into a DataFrame
+            df = pd.read_csv(tsv_file, sep='\t', header=header, skiprows=skiprows)
+            dfs[table_name] = df
+            print(f"Loaded table '{table_name}' with shape {df.shape}")
+        except Exception as e:
+            print(f"Error loading {tsv_file}: {e}")
+    
+    return dfs
+
+# Alternatively, to read directly from original text files:
+def load_tables_from_text_files(text_files):
+    """
+    Load tables directly from text files containing multiple TSV tables.
+    
+    Args:
+        text_files (list): List of paths to text files
+        
+    Returns:
+        dict: Dictionary mapping table names to pandas DataFrames
+    """
+    dfs = {}
+    
+    for text_file in text_files:
+        print(f"Reading tables from {text_file}")
+        with open(text_file) as f:
+            write_key = None
+            fio = io.StringIO()
+            for l in f.readlines():
+                if l.startswith('['):
+                    if write_key:
+                        fio.seek(0)
+                        header = None if write_key == 'Heading' else 'infer'
+                        dfs[write_key] = pd.read_csv(fio, sep='\t', header=header)
+                        print(f"Loaded table '{write_key}' with shape {dfs[write_key].shape}")
+                    fio = io.StringIO()
+                    write_key = l.strip('[]\n')
+                    continue
+                if write_key:
+                    fio.write(l)
+            # Process the last table
+            if write_key:
+                fio.seek(0)
+                header = None if write_key == 'Heading' else 'infer'
+                dfs[write_key] = pd.read_csv(fio, sep='\t', header=header)
+                print(f"Loaded table '{write_key}' with shape {dfs[write_key].shape}")
+    
+    return dfs
+
+def save_dataframes_to_files(dataframes, output_dir='./processed_data'):
+    """
+    Save each DataFrame in the dictionary to a CSV file.
+    
+    Args:
+        dataframes (dict): Dictionary mapping table names to pandas DataFrames
+        output_dir (str): Directory to save the CSV files
+        
+    Returns:
+        list: Paths to the saved CSV files
+    """
+    # Create output directory if it doesn't exist
+    os.makedirs(output_dir, exist_ok=True)
+    
+    saved_files = []
+    
+    for table_name, df in dataframes.items():
+        # Create a valid filename
+        valid_filename = re.sub(r'[^\w\-_\.]', '_', table_name)
+        file_path = os.path.join(output_dir, f"{valid_filename}.csv")
+        
+        # Save DataFrame to CSV
+        df.to_csv(file_path, index=False)
+        saved_files.append(file_path)
+        print(f"Saved DataFrame '{table_name}' to {file_path}")
+    
+    return saved_files
 
 
 if __name__ == "__main__":
     # Run the full pipeline
     process_result = pipeline_run("GSE68849")
     print(f"Processed {len(process_result['extracted_files'])} files from dataset GSE68849")
+
+    dataframes = process_result['dataframes']
+    print(f"Found {len(dataframes)} dataframes:")
+    for name, df in dataframes.items():
+        print(f"- {name}: {df.shape}")
+    
+    # Save each dataframe to a corresponding file
+    saved_files = save_dataframes_to_files(dataframes)
+    print(f"Saved {len(saved_files)} dataframes to CSV files")
