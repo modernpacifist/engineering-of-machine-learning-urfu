@@ -4,7 +4,7 @@ import os
 from airflow.models import Variable
 
 from airflow import DAG
-from airflow.operators.python_operator import PythonOperator
+from airflow.providers.standard.operators.python import PythonOperator
 
 
 default_args = {
@@ -22,7 +22,7 @@ dag = DAG(
     'client_activity_flags_etl',
     default_args=default_args,
     description='ETL process for client activity flags',
-    schedule_interval='0 0 5 * *',
+    schedule='0 0 5 * *',
     catchup=False
 )
 
@@ -79,10 +79,9 @@ def process_and_load(**context):
     """Transform data and load results to flags_activity.csv"""
     # Extract data
     profit_data = extract()
-    
+ 
     # Get execution date
-    execution_date = context['execution_date']
-    date_str = execution_date.strftime('%Y-%m-%d')
+    date_str = datetime.now().strftime('%Y-%m-%d')
     
     # Transform data
     flags_activity = transform(profit_data, date_str)
@@ -101,6 +100,5 @@ def process_and_load(**context):
 etl_task = PythonOperator(
     task_id='etl_process',
     python_callable=process_and_load,
-    provide_context=True,
     dag=dag,
 )
