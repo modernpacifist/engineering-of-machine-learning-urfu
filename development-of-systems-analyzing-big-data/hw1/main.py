@@ -11,402 +11,151 @@ import tarfile
 import gzip
 import shutil
 
-DATASET_LINK = 'https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE68849&format=file'
+# Constants
 DATA_DIR = './datasets'
 
+def create_directories(dataset_id):
+    """Create necessary directories for the dataset"""
+    dataset_dir = os.path.join(DATA_DIR, dataset_id)
+    raw_dir = os.path.join(dataset_dir, 'raw')
+    processed_dir = os.path.join(dataset_dir, 'processed')
+    
+    for directory in [DATA_DIR, dataset_dir, raw_dir, processed_dir]:
+        os.makedirs(directory, exist_ok=True)
+    
+    return dataset_dir, raw_dir, processed_dir
 
-def fetch_dataset(url=DATASET_LINK, save_path='./datasets/GSE68849_data.rar'):
-    # Check if the file already exists
-    if os.path.exists(save_path):
-        print(f"Dataset already exists at {save_path}")
-        return save_path
+def download_dataset(dataset_id, raw_dir):
+    """Download dataset from GEO"""
+    # Create the base URL for the dataset
+    dataset_page_url = f'https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc={dataset_id}'
     
-    # File doesn't exist, so download it
-    print(f"Downloading dataset from {url}...")
-    response = requests.get(url)
+    # Fetch the dataset page
+    response = requests.get(dataset_page_url)
+    if response.status_code != 200:
+        raise Exception(f"Failed to fetch dataset page: {response.status_code}")
     
-    # Check if the download was successful
-    if response.status_code == 200:
-        with open(save_path, 'wb') as f:
-            f.write(response.content)
-        print(f"Dataset downloaded and saved to {save_path}")
-        return save_path
-    else:
-        raise Exception(f"Failed to download dataset: HTTP status code {response.status_code}")
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Find the download link for RAW.tar
+    download_link = None
+    for link in soup.find_all('a', href=True):
+        if f'{dataset_id}_RAW.tar' in link.text:
+            download_link = link['href']
+            if not download_link.startswith('http'):
+                download_link = 'https://www.ncbi.nlm.nih.gov' + download_link
+            break
+    
+    if not download_link:
+        # Use the provided link as fallback
+        download_link = f'https://www.ncbi.nlm.nih.gov/geo/download/?acc={dataset_id}&format=file'
+    
+    # Download the file
+    tar_path = os.path.join(raw_dir, f'{dataset_id}_RAW.tar')
+    print(f"Downloading {download_link} to {tar_path}")
+    
+    # Using requests
+    response = requests.get(download_link, stream=True)
+    with open(tar_path, 'wb') as f:
+        for chunk in response.iter_content(chunk_size=8192):
+            f.write(chunk)
+    
+    print(f"Download completed: {tar_path}")
+    return tar_path
 
+def extract_tar(tar_path, raw_dir):
+    """Extract the tar archive and return a list of extracted files"""
+    print(f"Extracting {tar_path}")
+    with tarfile.open(tar_path) as tar:
+        tar.extractall(path=raw_dir)
+    
+    # Get the list of extracted files (excluding directories)
+    files = [f for f in os.listdir(raw_dir) if os.path.isfile(os.path.join(raw_dir, f)) and f != os.path.basename(tar_path)]
+    print(f"Extracted {len(files)} files: {', '.join(files)}")
+    return files
 
-def extract_tar_archive(tar_filepath, extract_dir=None):
-    """
-    Extract a TAR archive and return info about extracted files.
+def process_gz_file(gz_file, raw_dir, processed_dir):
+    """Process a gzipped file, extract tables and save as TSV"""
+    gz_path = os.path.join(raw_dir, gz_file)
+    file_name = os.path.splitext(gz_file)[0]
+    file_dir = os.path.join(processed_dir, file_name)
+    os.makedirs(file_dir, exist_ok=True)
     
-    Args:
-        tar_filepath (str): Path to the TAR file
-        extract_dir (str): Directory to extract files to. If None, uses parent directory of TAR file.
-        
-    Returns:
-        list: List of dictionaries with info about extracted files
-    """
-    if extract_dir is None:
-        extract_dir = os.path.dirname(tar_filepath)
+    # Extract the gzipped file
+    txt_path = os.path.join(file_dir, f"{file_name}.txt")
+    with gzip.open(gz_path, 'rb') as f_in:
+        with open(txt_path, 'wb') as f_out:
+            shutil.copyfileobj(f_in, f_out)
     
-    # Check if file exists and has content
-    if not os.path.exists(tar_filepath):
-        raise FileNotFoundError(f"TAR file not found at {tar_filepath}")
-    
-    file_size = os.path.getsize(tar_filepath)
-    if file_size == 0:
-        raise ValueError(f"TAR file is empty (0 bytes): {tar_filepath}")
-    
-    print(f"Attempting to extract TAR file: {tar_filepath} (Size: {file_size} bytes)")
-    
-    # Get base name without extension for creating subdirectory
-    base_name = os.path.basename(tar_filepath).split('.')[0]
-    extraction_root = os.path.join(extract_dir, f"{base_name}_extracted")
-    
-    # Check if extraction directory already exists and has content
-    if os.path.exists(extraction_root) and os.listdir(extraction_root):
-        print(f"Extraction directory {extraction_root} already exists with content. Skipping extraction.")
-        # Gather information about existing files
-        extracted_files = []
-        for root, dirs, files in os.walk(extraction_root):
-            for file in files:
-                file_path = os.path.join(root, file)
-                file_info = {
-                    'name': file,
-                    'size': os.path.getsize(file_path),
-                    'extraction_dir': root,
-                    'extracted_path': file_path
-                }
-                extracted_files.append(file_info)
-        return extracted_files
-    
-    # Create extraction directory if it doesn't exist
-    os.makedirs(extraction_root, exist_ok=True)
-    
-    extracted_files = []
-    
-    with tarfile.open(tar_filepath, 'r') as tar:
-        members = tar.getmembers()
-        print(f"Found {len(members)} files in the archive")
-        
-        for member in members:
-            if member.isfile():  # Skip directories
-                # Create individual directory for each file
-                file_name = os.path.basename(member.name)
-                file_dir = os.path.join(extraction_root, os.path.splitext(file_name)[0])
-                os.makedirs(file_dir, exist_ok=True)
-                
-                # Extract file to its directory
-                file_info = {
-                    'name': file_name,
-                    'size': member.size,
-                    'extraction_dir': file_dir,
-                    'extracted_path': os.path.join(file_dir, file_name)
-                }
-                
-                # Extract the file
-                tar.extract(member, path=file_dir)
-                extracted_files.append(file_info)
-                print(f"Extracted {file_name} to {file_dir}")
-    
-    return extracted_files
-
-def extract_gzip_files(files_info):
-    """
-    Process gzipped files from a list of file information dictionaries.
-    
-    Args:
-        files_info (list): List of dictionaries with file information
-        
-    Returns:
-        list: Updated file information with extracted content paths
-    """
-    for file_info in files_info:
-        file_path = file_info['extracted_path']
-        
-        if file_path.endswith('.gz'):
-            output_path = file_path[:-3]  # Remove the .gz extension
-            
-            # Extract the gzipped file
-            with gzip.open(file_path, 'rb') as f_in:
-                with open(output_path, 'wb') as f_out:
-                    shutil.copyfileobj(f_in, f_out)
-            
-            print(f"Extracted gzipped file: {output_path}")
-            file_info['uncompressed_path'] = output_path
-            
-            # If it's a text file, check for multiple TSV tables
-            if output_path.endswith('.txt'):
-                split_tsv_tables(output_path, file_info['extraction_dir'])
-    
-    return files_info
-
-def split_tsv_tables(text_file_path, output_dir):
-    """
-    Split a text file containing multiple TSV tables into separate files.
-    Tables are identified by headers starting with '['.
-    
-    Args:
-        text_file_path (str): Path to the text file
-        output_dir (str): Directory to save the split tables
-        
-    Returns:
-        list: Paths to the created TSV files
-    """
-    with open(text_file_path, 'r') as file:
-        content = file.read()
-    
-    # Find table headers starting with '['
-    table_pattern = r'(\[\S+.*?)(?=\[\S+|\Z)'
-    tables = re.findall(table_pattern, content, re.DOTALL)
-    
-    output_files = []
-    
-    if tables:
-        print(f"Found {len(tables)} TSV tables in {text_file_path}")
-        
-        for i, table_content in enumerate(tables):
-            # Extract the header title from the first line
-            header_match = re.match(r'\[(\S+)[^\n]*', table_content)
-            if header_match:
-                table_name = header_match.group(1)
-            else:
-                table_name = f"table_{i+1}"
-            
-            # Create a clean filename
-            file_name = f"{table_name}.tsv"
-            output_path = os.path.join(output_dir, file_name)
-            
-            # Write the table to a separate file
-            with open(output_path, 'w') as out_file:
-                out_file.write(table_content.strip())
-            
-            print(f"Saved table to {output_path}")
-            output_files.append(output_path)
-    else:
-        print(f"No TSV tables with '[' headers found in {text_file_path}")
-    
-    return output_files
-
-def process_dataset(dataset_file):
-    """
-    Process the downloaded dataset file.
-    
-    Args:
-        dataset_file (str): Path to the dataset file
-        
-    Returns:
-        list: List of extracted TSV files
-    """
-    # Extract the archive
-    extracted_files_info = extract_tar_archive(dataset_file)
-    
-    # Process any gzipped files
-    processed_files = extract_gzip_files(extracted_files_info)
-    
-    # Process all text files to split multiple TSV tables
-    all_tsv_files = []
-    
-    for file_info in processed_files:
-        # Check for uncompressed text files that might contain multiple tables
-        if 'uncompressed_path' in file_info:
-            file_path = file_info['uncompressed_path']
-            if file_path.endswith('.txt'):
-                # This path is already handled in extract_gzip_files
-                continue
-            elif file_path.endswith('.tsv'):
-                all_tsv_files.append(file_path)
-        # Check original extracted files
-        elif file_info['extracted_path'].endswith('.txt'):
-            # Split any text files that might contain multiple TSV tables
-            split_files = split_tsv_tables(file_info['extracted_path'], file_info['extraction_dir'])
-            all_tsv_files.extend(split_files)
-        elif file_info['extracted_path'].endswith('.tsv'):
-            all_tsv_files.append(file_info['extracted_path'])
-    
-    print(f"Total TSV tables extracted: {len(all_tsv_files)}")
-    return all_tsv_files
-
-
-def pipeline_run(dataset_id="GSE68849"):
-    """
-    Complete pipeline for downloading and processing a GEO dataset.
-    
-    Args:
-        dataset_id (str): GEO dataset ID
-        
-    Returns:
-        dict: Information about the processed dataset
-    """
-    # Create datasets directory
-    datasets_dir = DATA_DIR
-    os.makedirs(datasets_dir, exist_ok=True)
-    
-    # Download the dataset
-    dataset_file = fetch_dataset()
-    
-    # Extract and process files from the archive
-    if dataset_file and os.path.exists(dataset_file):
-        # Extract the archive
-        extracted_files_info = extract_tar_archive(dataset_file)
-        
-        # Process the extracted files
-        processed_files = extract_gzip_files(extracted_files_info)
-        
-        # Get the extraction root directory
-        if processed_files:
-            # Get list of all TSV files
-            tsv_files = process_dataset(dataset_file)
-            
-            # Load TSV files into DataFrames
-            dataframes = load_tsv_files_to_dataframes(tsv_files)
-            
-            # Alternative: find and process original text files
-            text_files = [file_info['extracted_path'] 
-                         for file_info in processed_files 
-                         if file_info['extracted_path'].endswith('.txt')]
-            
-            # Add uncompressed text files
-            text_files.extend([file_info['uncompressed_path'] 
-                              for file_info in processed_files 
-                              if 'uncompressed_path' in file_info 
-                              and file_info['uncompressed_path'].endswith('.txt')])
-        else:
-            print(f"Warning: No files were extracted")
-            tsv_files = []
-            dataframes = {}
-            
-        return {
-            'dataset_id': dataset_id,
-            'dataset_file': dataset_file,
-            'extracted_files': processed_files,
-            'tsv_files': tsv_files,
-            'dataframes': dataframes
-        }
-    else:
-        raise Exception("Failed to process dataset: Dataset file not found")
-
-
-def load_tsv_files_to_dataframes(tsv_files):
-    """
-    Load TSV files into pandas DataFrames.
-    
-    Args:
-        tsv_files (list): List of paths to TSV files
-        
-    Returns:
-        dict: Dictionary mapping table names to pandas DataFrames
-    """
+    # Process the tables in the text file
     dfs = {}
-    
-    for tsv_file in tsv_files:
-        # Extract table name from filename
-        table_name = os.path.basename(tsv_file).split('.')[0]
-        
-        # Read the TSV file
-        try:
-            # Check if the file starts with a header in brackets
-            with open(tsv_file, 'r') as f:
-                first_line = f.readline().strip()
-            
-            # If the file starts with a header in brackets, skip the first line
-            header = 'infer'
-            skiprows = 0
-            if first_line.startswith('['):
-                # Extract table name from the header
-                table_name = first_line.strip('[]\n')
-                skiprows = 1
-                # Special case for 'Heading' section
-                if table_name == 'Heading':
-                    header = None
-            
-            # Load the TSV file into a DataFrame
-            df = pd.read_csv(tsv_file, sep='\t', header=header, skiprows=skiprows)
-            dfs[table_name] = df
-            print(f"Loaded table '{table_name}' with shape {df.shape}")
-        except Exception as e:
-            print(f"Error loading {tsv_file}: {e}")
-    
-    return dfs
-
-# Alternatively, to read directly from original text files:
-def load_tables_from_text_files(text_files):
-    """
-    Load tables directly from text files containing multiple TSV tables.
-    
-    Args:
-        text_files (list): List of paths to text files
-        
-    Returns:
-        dict: Dictionary mapping table names to pandas DataFrames
-    """
-    dfs = {}
-    
-    for text_file in text_files:
-        print(f"Reading tables from {text_file}")
-        with open(text_file) as f:
-            write_key = None
-            fio = io.StringIO()
-            for l in f.readlines():
-                if l.startswith('['):
-                    if write_key:
-                        fio.seek(0)
-                        header = None if write_key == 'Heading' else 'infer'
-                        dfs[write_key] = pd.read_csv(fio, sep='\t', header=header)
-                        print(f"Loaded table '{write_key}' with shape {dfs[write_key].shape}")
-                    fio = io.StringIO()
-                    write_key = l.strip('[]\n')
-                    continue
+    with open(txt_path) as f:
+        write_key = None
+        fio = io.StringIO()
+        for l in f.readlines():
+            if l.startswith('['):
                 if write_key:
-                    fio.write(l)
-            # Process the last table
+                    fio.seek(0)
+                    header = None if write_key == 'Heading' else 'infer'
+                    dfs[write_key] = pd.read_csv(fio, sep='\t', header=header)
+                fio = io.StringIO()
+                write_key = l.strip('[]\n')
+                continue
             if write_key:
-                fio.seek(0)
-                header = None if write_key == 'Heading' else 'infer'
-                dfs[write_key] = pd.read_csv(fio, sep='\t', header=header)
-                print(f"Loaded table '{write_key}' with shape {dfs[write_key].shape}")
+                fio.write(l)
+        fio.seek(0)
+        if write_key:
+            dfs[write_key] = pd.read_csv(fio, sep='\t')
     
-    return dfs
-
-def save_dataframes_to_files(dataframes, output_dir='./processed_data'):
-    """
-    Save each DataFrame in the dictionary to a CSV file.
-    
-    Args:
-        dataframes (dict): Dictionary mapping table names to pandas DataFrames
-        output_dir (str): Directory to save the CSV files
+    # Save each table as a separate TSV file
+    for table_name, df in dfs.items():
+        table_file = os.path.join(file_dir, f"{table_name}.tsv")
+        df.to_csv(table_file, sep='\t', index=False)
+        print(f"Saved table {table_name} to {table_file}")
         
-    Returns:
-        list: Paths to the saved CSV files
-    """
-    # Create output directory if it doesn't exist
-    os.makedirs(output_dir, exist_ok=True)
+        # Create reduced version of the Probes table
+        if table_name == 'Probes':
+            columns_to_remove = ['Definition', 'Ontology_Component', 'Ontology_Process', 
+                                'Ontology_Function', 'Synonyms', 'Obsolete_Probe_Id', 
+                                'Probe_Sequence']
+            reduced_df = df.drop(columns=[col for col in columns_to_remove if col in df.columns])
+            reduced_file = os.path.join(file_dir, f"{table_name}_reduced.tsv")
+            reduced_df.to_csv(reduced_file, sep='\t', index=False)
+            print(f"Saved reduced {table_name} table to {reduced_file}")
     
-    saved_files = []
+    # Remove the original text file if all tables were successfully saved
+    if len(dfs) > 0:
+        os.remove(txt_path)
+        print(f"Removed original text file: {txt_path}")
     
-    for table_name, df in dataframes.items():
-        # Create a valid filename
-        valid_filename = re.sub(r'[^\w\-_\.]', '_', table_name)
-        file_path = os.path.join(output_dir, f"{valid_filename}.csv")
-        
-        # Save DataFrame to CSV
-        df.to_csv(file_path, index=False)
-        saved_files.append(file_path)
-        print(f"Saved DataFrame '{table_name}' to {file_path}")
-    
-    return saved_files
+    return dfs.keys()
 
+def main(dataset_id):
+    """Main function to orchestrate the pipeline"""
+    # Step 1: Create directories
+    dataset_dir, raw_dir, processed_dir = create_directories(dataset_id)
+    
+    # Step 2: Download the dataset
+    tar_path = download_dataset(dataset_id, raw_dir)
+    
+    # Step 3: Extract the tar archive
+    extracted_files = extract_tar(tar_path, raw_dir)
+    
+    # Step 4: Process each gzipped file
+    for gz_file in extracted_files:
+        if gz_file.endswith('.gz'):
+            table_names = process_gz_file(gz_file, raw_dir, processed_dir)
+            print(f"Processed {gz_file}, found tables: {', '.join(table_names)}")
+    
+    print(f"Processing completed for dataset {dataset_id}")
 
 if __name__ == "__main__":
-    # Run the full pipeline
-    process_result = pipeline_run("GSE68849")
-    print(f"Processed {len(process_result['extracted_files'])} files from dataset GSE68849")
-
-    dataframes = process_result['dataframes']
-    print(f"Found {len(dataframes)} dataframes:")
-    for name, df in dataframes.items():
-        print(f"- {name}: {df.shape}")
+    import sys
     
-    # Save each dataframe to a corresponding file
-    saved_files = save_dataframes_to_files(dataframes)
-    print(f"Saved {len(saved_files)} dataframes to CSV files")
+    if len(sys.argv) > 1:
+        dataset_id = sys.argv[1]
+    else:
+        dataset_id = 'GSE68849'  # Default dataset ID
+    
+    main(dataset_id)
+
